@@ -32,16 +32,16 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 require dirname(__FILE__)."/alex_helpers.php";
 
-register_activation_hook( __FILE__, 'alex_activ_plugin' );
-register_deactivation_hook( __FILE__, 'alex_deactiv_plugin' );
+register_activation_hook( __FILE__, 'alex_sp_activ_plugin' );
+register_deactivation_hook( __FILE__, 'alex_sp_deactiv_plugin' );
 
 ### Create Text Domain For Translations
-add_action('plugins_loaded', 'polls_textdomain');
-function polls_textdomain(){
+add_action('plugins_loaded', 'alex_sp_polls_textdomain');
+function alex_sp_polls_textdomain(){
 	load_plugin_textdomain( 'simply_polls', false, dirname( plugin_basename( __FILE__ ) )."/lang" ); 
 }
 
-function alex_activ_plugin(){
+function alex_sp_activ_plugin(){
 
 	global $wpdb;
 	$charset_collate = $wpdb->get_charset_collate();  //DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci usually DEFAULT CHARSET=utf8
@@ -74,24 +74,24 @@ function alex_activ_plugin(){
 
 }
 
-function alex_deactiv_plugin(){
+function alex_sp_deactiv_plugin(){
 
 }
 
 
-add_action( 'wp_enqueue_scripts', 'alex_frontend_css' );
+add_action( 'wp_enqueue_scripts', 'alex_sp_frontend_css' );
 
-function alex_frontend_css(){
+function alex_sp_frontend_css(){
 
 	  wp_register_style( "frontend_css", plugins_url("/css/alex_frontend.css",__FILE__) );
 	  wp_enqueue_style( 'frontend_css' );
  }
 
-function register_alex_menu_page(){
-	add_menu_page(  __( 'name_plugin', 'simply_polls' ), __( 'name_plugin', 'simply_polls' ), 'manage_options', 'slug_alex_polls','cb_alex_polls_options','
+function alex_sp_register_menu_page(){
+	add_menu_page(  __( 'name_plugin', 'simply_polls' ), __( 'name_plugin', 'simply_polls' ), 'manage_options', 'slug_alex_polls','alex_sp_cb_polls_options','
 dashicons-editor-alignleft' );
-	add_action("admin_enqueue_scripts", "alex_admin_css");
-	function alex_admin_css($hook){
+	add_action("admin_enqueue_scripts", "alex_sp_admin_css");
+	function alex_sp_admin_css($hook){
 		//$hook - адрес текущей страницы
 		// echo $hook." xcvb";
 		if( $hook != "toplevel_page_slug_alex_polls") return;
@@ -105,10 +105,10 @@ dashicons-editor-alignleft' );
 			
 	}
 }
-add_action( 'admin_menu', 'register_alex_menu_page' );
+add_action( 'admin_menu', 'alex_sp_register_menu_page' );
 
 
-function cb_alex_polls_options(){
+function alex_sp_cb_polls_options(){
 
 	### Check User is administrator
 	if( !current_user_can('manage_options') ){
@@ -385,8 +385,8 @@ function cb_alex_polls_options(){
 }
 
 // Handler ajax data on admin side
-add_action( 'wp_ajax_admin-poll', 'my_action_callback' );
-function my_action_callback() {
+add_action( 'wp_ajax_admin-poll', 'alex_sp_action_callback' );
+function alex_sp_action_callback() {
 
 		$nonce = $_POST['nonce'];
 		if ( !wp_verify_nonce( $nonce, 'admin_nonce' ) ) exit;
@@ -399,8 +399,8 @@ function my_action_callback() {
 
 }
 
-add_action( 'wp_ajax_admin-del-answ', 'cb_del_one_answ' );
-function cb_del_one_answ() {
+add_action( 'wp_ajax_admin-del-answ', 'alex_sp_cb_del_one_answ' );
+function alex_sp_cb_del_one_answ() {
 
 		$nonce = $_POST['nonce'];
 		if ( !wp_verify_nonce( $nonce, 'admin_nonce' ) ) exit;
@@ -417,7 +417,7 @@ function cb_del_one_answ() {
 /* **********  фронтенд ************ */
 
 
-function cb_alex_poll( $atts ) {
+function alex_sp_cb_poll( $atts ) {
 
    //[alex_poll id="1"]
 
@@ -485,12 +485,12 @@ function cb_alex_poll( $atts ) {
 }
 
 // создание шорткода для фронтенда части
-add_shortcode('alex_poll', 'cb_alex_poll');
+add_shortcode('alex_poll', 'alex_sp_cb_poll');
 
-add_action('wp_ajax_add-vote', 'alex_handler_ajax');
-add_action('wp_ajax_nopriv_add-vote', 'alex_handler_ajax');
+add_action('wp_ajax_add-vote', 'alex_sp_handler_ajax');
+add_action('wp_ajax_nopriv_add-vote', 'alex_sp_handler_ajax');
 
-function alex_handler_ajax(){
+function alex_sp_handler_ajax(){
 
 	// print_r($_POST);
 	$nonce = $_POST['nonce'];
