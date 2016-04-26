@@ -100,7 +100,7 @@ dashicons-editor-alignleft' );
 		//load js in footer
 		wp_enqueue_script('alex-admin-js',plugins_url("/js/alex_admin.js",__FILE__),array('jquery'),false,true);
 
-		wp_localize_script( 'alex-admin-js', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
+		wp_localize_script( 'alex-admin-js', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ),  'admin_nonce' => wp_create_nonce('admin_nonce')) );
 		wp_localize_script( 'alex-admin-js', 'dataL10n', array( 'del_poll' =>__( 'del_poll', 'simply_polls' ), 'l_answer' =>__( 'l_answer', 'simply_polls' ), 'conf_del_poll' => __( 'conf_del_poll', 'simply_polls'  ), 'conf_del_answ' => __( 'conf_del_answ', 'simply_polls'  ), 'success_del_poll' => __( 'success_del_poll', 'simply_polls'  ), 'success_del_answ' => __( 'success_del_answ', 'simply_polls'  ) ) );
 			
 	}
