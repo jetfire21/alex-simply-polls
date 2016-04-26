@@ -374,6 +374,8 @@ function cb_alex_polls_options(){
 add_action( 'wp_ajax_admin-poll', 'my_action_callback' );
 function my_action_callback() {
 
+		if ( !wp_verify_nonce( $nonce, 'admin_nonce' ) ) exit;
+
 		global $wpdb;
 		if($_POST['poll_id'] > 0) {
 		   del_one_poll( $_POST['poll_id'] );
@@ -384,6 +386,8 @@ function my_action_callback() {
 
 add_action( 'wp_ajax_admin-del-answ', 'cb_del_one_answ' );
 function cb_del_one_answ() {
+
+		if ( !wp_verify_nonce( $nonce, 'admin_nonce' ) ) exit;
 
 		global $wpdb;
 		if( (int)$_POST['answ_id'] > 0 and (int)$_POST['poll_id'] > 0 ) {
