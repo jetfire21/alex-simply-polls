@@ -1,0 +1,24 @@
+.poll-alex h3{  margin-bottom: 8px !important;}
+.poll-alex .vote-bar{     
+	background: #B93737;
+    height: 8px;
+ }
+ .poll-alex p{ margin: 0 0 5px !important; }
+ .poll-alex .dop-text{ color:#ADA2A2; }
+ .poll-alex #add_vote { margin-bottom: 20px; }
+ .poll-alex .total-vote{ font-weight: bold; font-style: normal; }
+ .poll-alex p{ font-style: italic; font-size: 14px; }
+ .poll-alex p input {   margin-right: 8px; }
+ .poll-alex #add_vote { margin-top: 10px; }
+ .poll-alex #add_vote{
+     background: #000;
+     border: 0;
+    color: #fff;
+    padding: 6px 15px;
+    font-weight: bold;
+    cursor: pointer;
+ }
+
+
+
+
