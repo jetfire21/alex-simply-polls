@@ -128,6 +128,10 @@ function cb_alex_polls_options(){
 		<?php 
 		 // print_r($_POST);
 		 if($_POST['add']){
+
+		 	// if no exist _wpnonce and _wp_http_referrer end script
+			check_admin_referer('sp_add_poll');
+
 			 $title = trim($_POST['title']);
 			 if( !empty($title)) {
 				echo '<div id="message" class="updated fade"><p>'.__( 'success_add_poll', 'simply_polls' ).'</p></div>';
@@ -139,6 +143,7 @@ function cb_alex_polls_options(){
 		 </div>
 
 	     <form method="post" action="<?php echo $base_page;?>&amp;mode=add">
+	     <?php wp_nonce_field('sp_add_poll'); ?>
 		<table class="form-table table1">
 		<tr>
 			<th scope="row"><label for="title"><?php _e( 'title_poll', 'simply_polls' );?></label></th>
@@ -210,8 +215,8 @@ function cb_alex_polls_options(){
 		if(!empty($title)){
 
 			$html .= "<div class='poll-alex' data-poll-id='".$poll_id."'>";
-			$html .= "<h3>".$title[0]['title']."</h3>";
-			if( $title[0]['content'] ) $html .= "<p class='dop-text'>".$title[0]['content']."</p>";
+			$html .= "<h3>".esc_attr($title[0]['title'])."</h3>";
+			if( $title[0]['content'] ) $html .= "<p class='dop-text'>".esc_attr($title[0]['content'])."</p>";
 
 			if( !empty($answers) ){
 
@@ -222,7 +227,7 @@ function cb_alex_polls_options(){
 				if($count_votes > 0) {
 					foreach ($answers as $k => $v) {			
 						$percent = round( (100/$count_votes) * $v['votes'] );
-						$html .= "<p>".$v['answ']." - (".$percent." %, ".$v['votes']." ".__('votes', 'simply_polls')." )</p>";
+						$html .= "<p>".esc_attr($v['answ'])." - (".$percent." %, ".$v['votes']." ".__('votes', 'simply_polls')." )</p>";
 						if($v['votes']>0) $html .= "<p class='vote-bar' style='width:".$percent."%;'> </p>";
 					}
 					$html .= "<p class='total-vote'>".__('total_vote', 'simply_polls')." - ".$count_votes."</p>";			
@@ -241,7 +246,8 @@ function cb_alex_polls_options(){
 		break;
 	case 'edit':
     		if($_POST['edit']) {
-	    		// print_r($_POST);
+	    		
+	    		check_admin_referer('sp_edit_poll');
 
 	    		$title = trim($_POST['title']);
 	    		$content = trim($_POST['content']);
@@ -271,15 +277,16 @@ function cb_alex_polls_options(){
 	 <div class='wrap'>
 	  <div id="for_message"><h1><?php _e( 'edit_poll', 'simply_polls' );?></h1></div>
        <form method="post" action="<?php echo $base_page;?>&amp;mode=edit&amp;id=<?php echo $poll_id;?>">
+       <?php wp_nonce_field('sp_edit_poll'); ?>
 		<table class="form-table table1">
 		<tr>
 			<th scope="row"><label for="title"><?php _e( 'title_poll', 'simply_polls' );?></label></th>
-			<td><input name="title" type="text" id="title" maxlength="200" class="regular-text" value="<?php if($title[0]['title']) echo $title[0]['title'];?>" /></td>
+			<td><input name="title" type="text" id="title" maxlength="200" class="regular-text" value="<?php if($title[0]['title']) echo esc_attr($title[0]['title']);?>" /></td>
 			<td> </td>
 		</tr>
 		<tr>
 			<th scope="row"><label for="content"><?php _e( 'custom_text', 'simply_polls' );?></label></th>
-			<td><textarea rows="1" cols="45" name="content" id="excerpt" class="regular-text" /><?php if($title[0]['content']) echo $title[0]['content'];?></textarea></td>
+			<td><textarea rows="1" cols="45" name="content" id="excerpt" class="regular-text" /><?php if($title[0]['content']) echo esc_attr($title[0]['content']);?></textarea></td>
 			<td> </td>
 		</tr>
 		<?php if($answers):?>
@@ -287,7 +294,7 @@ function cb_alex_polls_options(){
 			<?php foreach ($answers as $k => $v):?>
 				<tr class="answ" id="del_answ_<?php if($v['answ_id']) { echo $v['answ_id']; } else { echo $i; } ?>">
 					<th scope="row"><label for="answ1"><?php _e( 'l_answer', 'simply_polls' );?> <?php echo $i;?></label></th>
-					<td><input name="answ<?php if($v['answ_id']) { echo '-'.$v['answ_id']; } else { echo $i; } ?>" type="text" id="answ<?php echo $i;?>" class="regular-text" value="<?php echo $v['answ'];?>" /></td>
+					<td><input name="answ<?php if($v['answ_id']) { echo '-'.$v['answ_id']; } else { echo $i; } ?>" type="text" id="answ<?php echo $i;?>" class="regular-text" value="<?php echo esc_attr($v['answ']);?>" /></td>
 					<td><input type="submit" onclick="poll_answ(<?php echo $poll_id;?>, <?php echo $v['answ_id'];?>); return false;" name="del_answ" class="button" value="<?php _e( 'del_poll', 'simply_polls' );?>"></td>
 				</tr>
 			<?php $i++;?>
@@ -344,7 +351,7 @@ function cb_alex_polls_options(){
 							?>
 							<tr id="delete_poll_<?php echo $poll['id'];?>">
 								<td class="author column-author"><?php echo $poll['id'];?></td>
-								<td><?php echo $poll['title'];?></td>
+								<td><?php echo esc_attr($poll['title']);?></td>
 								<td class="author column-author"><?php echo $count_votes;?></td>
 								<td class="author column-author"><a href="<?php echo $base_page;?>&amp;mode=results&amp;id=<?php echo $poll['id'];?>"><?php _e( 'results', 'simply_polls' )?></a></td>
 								<td class="author column-author"><a href="<?php echo $base_page;?>&amp;mode=edit&amp;id=<?php echo $poll['id'];?>"><?php _e( 'edit', 'simply_polls' )?></a></td>
@@ -422,13 +429,13 @@ function cb_alex_poll( $atts ) {
 			if(!empty($title)){
 				$html = "<div id='alex-poll-wrap' class='poll_id_".$poll_id."'>";
 				$html .= "<div class='poll-alex'>";
-				$html .= "<h3>".$title[0]['title']."</h3>";
-			    if( $title[0]['content'] ) $html .= "<p class='dop-text'>".$title[0]['content']."</p>";
+				$html .= "<h3>".esc_attr($title[0]['title'])."</h3>";
+			    if( $title[0]['content'] ) $html .= "<p class='dop-text'>".esc_attr($title[0]['content'])."</p>";
 			 }
 			if( !empty($answers) ){
 				$html .= "<form action='' method='post'>";
 				foreach ($answers as $k => $v) {
-					$html .= "<p><input type='radio' name='answ' value='".$v['answ_id']."'/>".$v['answ']."</p>";
+					$html .= "<p><input type='radio' name='answ' value='".$v['answ_id']."'/>".esc_attr($v['answ'])."</p>";
 				}
 				$html .= '<input type="submit"  id="add_vote" onclick="add_vote_user('.$poll_id.'); return false;" value="'.__('btn_vote', 'simply_polls').'" />
 				</form>';
@@ -443,8 +450,8 @@ function cb_alex_poll( $atts ) {
 			$answers = get_one_poll_answers($poll_id);
 			if(!empty($title)){
 				$html = "<div class='poll-alex' data-poll-id='".$poll_id."'>";
-				$html .= "<h3>".$title[0]['title']."</h3>";
-				if( $title[0]['content'] ) $html .= "<p class='dop-text'>".$title[0]['content']."</p>";
+				$html .= "<h3>".esc_attr($title[0]['title'])."</h3>";
+				if( $title[0]['content'] ) $html .= "<p class='dop-text'>".esc_attr($title[0]['content'])."</p>";
 			}
 
 			if( !empty($answers) ){
@@ -456,7 +463,7 @@ function cb_alex_poll( $atts ) {
 
 				foreach ($answers as $k => $v) {			
 					$percent = round( (100/$count_votes) * $v['votes'] );
-					$html .= "<p>".$v['answ']." - (".$percent." %, ".$v['votes']." ".__('votes', 'simply_polls')." )</p>";
+					$html .= "<p>".esc_attr($v['answ'])." - (".$percent." %, ".$v['votes']." ".__('votes', 'simply_polls')." )</p>";
 					if($v['votes']>0) $html .= "<p class='vote-bar' style='width:".$percent."%;'> </p>";
 				}
 				$html .= "<p class='total-vote'>".__('total_vote', 'simply_polls')." - ".$count_votes."</p>";
@@ -491,8 +498,8 @@ function alex_handler_ajax(){
 	$answers = get_one_poll_answers($poll_id);
 	if(!empty($title)){
 		$html = "<div class='poll-alex' data-poll-id='".$poll_id."'>";
-		$html .= "<h3>".$title[0]['title']."</h3>";
-		if( $title[0]['content'] ) $html .= "<p class='dop-text'>".$title[0]['content']."</p>";
+		$html .= "<h3>".esc_attr($title[0]['title'])."</h3>";
+		if( $title[0]['content'] ) $html .= "<p class='dop-text'>".esc_attr($title[0]['content'])."</p>";
 	}
 
 	if( !empty($answers) ){
@@ -504,7 +511,7 @@ function alex_handler_ajax(){
 
 		foreach ($answers as $k => $v) {			
 			$percent = round( (100/$count_votes) * $v['votes'] );
-			$html .= "<p>".$v['answ']." - (".$percent." %, ".$v['votes']." ".__('votes', 'simply_polls')." )</p>";
+			$html .= "<p>".esc_attr($v['answ'])." - (".$percent." %, ".$v['votes']." ".__('votes', 'simply_polls')." )</p>";
 			if($v['votes']>0) $html .= "<p class='vote-bar' style='width:".$percent."%;'> </p>";
 		}
 		$html .= "<p class='total-vote'>".__('total_vote', 'simply_polls')." - ".$count_votes."</p>";
