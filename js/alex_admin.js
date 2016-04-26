@@ -44,7 +44,7 @@ function delete_poll(poll_id){
 				var data = {
 					'action': 'admin-poll',
 					'poll_id': poll_id,
-					'admin_nonce': ajax_object.admin_nonce
+					'nonce': ajax_object.admin_nonce
 				};
 				jQuery.post(ajax_object.ajax_url, data, function(response) {
 					// alert('res: ' + response);
@@ -68,7 +68,7 @@ function poll_answ(poll_id, answ_id){
 					'action': 'admin-del-answ',
 					'poll_id': poll_id,
 					'answ_id': answ_id,
-					'admin_nonce': ajax_object.admin_nonce
+					'nonce': ajax_object.admin_nonce
 				};
 				jQuery.post(ajax_object.ajax_url, data, function(response) {
 					// alert('res: ' + response);

@@ -100,7 +100,7 @@ dashicons-editor-alignleft' );
 		//load js in footer
 		wp_enqueue_script('alex-admin-js',plugins_url("/js/alex_admin.js",__FILE__),array('jquery'),false,true);
 
-		wp_localize_script( 'alex-admin-js', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ),  'admin_nonce' => wp_create_nonce('admin_nonce')) );
+		wp_localize_script( 'alex-admin-js', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ),  'admin_nonce' => wp_create_nonce('admin_nonce') ) );
 		wp_localize_script( 'alex-admin-js', 'dataL10n', array( 'del_poll' =>__( 'del_poll', 'simply_polls' ), 'l_answer' =>__( 'l_answer', 'simply_polls' ), 'conf_del_poll' => __( 'conf_del_poll', 'simply_polls'  ), 'conf_del_answ' => __( 'conf_del_answ', 'simply_polls'  ), 'success_del_poll' => __( 'success_del_poll', 'simply_polls'  ), 'success_del_answ' => __( 'success_del_answ', 'simply_polls'  ) ) );
 			
 	}
@@ -118,7 +118,7 @@ function cb_alex_polls_options(){
 	$base_page = 'admin.php?page=slug_alex_polls';
 
      $mode =  ( $_GET['mode'] ) ? trim( $_GET['mode'] ) : '';
-     $poll_id =	( $_GET['id'] > 0 ) ? (int)$_GET['id'] : 0; 
+     $poll_id =	( $_GET['id'] ) ? (int)$_GET['id'] : 0; 
 
 	switch ($mode) {
 	case 'add':
@@ -132,7 +132,7 @@ function cb_alex_polls_options(){
 		 	// if no exist _wpnonce and _wp_http_referrer end script
 			check_admin_referer('sp_add_poll');
 
-			 $title = trim($_POST['title']);
+			 $title = sanitize_text_field($_POST['title']);
 			 if( !empty($title)) {
 				echo '<div id="message" class="updated fade"><p>'.__( 'success_add_poll', 'simply_polls' ).'</p></div>';
 			}else{
@@ -182,19 +182,22 @@ function cb_alex_polls_options(){
     <?php
     	if($_POST['add']) {
     		
+    		check_admin_referer('sp_add_poll');
     		// print_r($_POST);
-    		$title = trim($_POST['title']);
-    		$content = trim($_POST['content']);
-    		$count_fields = count($_POST);
+    		$title = sanitize_text_field($_POST['title']);
+    		$content = sanitize_text_field($_POST['content']);
+    		// $count_fields = count($_POST);
     		foreach ($_POST as $k => $v) {
     			$v = trim($v);
     			if( !empty($v) ){
-    				$answs[$k] = $v; 
+    				$answs[$k] = sanitize_text_field($v); 
     			}
     		}
+    		unset($answs['_wpnonce']);
+    		unset($answs['_wp_http_referer']);
+    		unset($answs['add']);
     		unset($answs['title']);
     		unset($answs['content']);
-    		unset($answs['add']);
     		// echo "<pre>";
     		// print_r($answs);
     		// echo "</pre>";
@@ -203,6 +206,7 @@ function cb_alex_polls_options(){
     		}else{
     			$error['title'] = 1;
     		}
+
     		add_answs($answs);
     		
     	}
@@ -246,11 +250,11 @@ function cb_alex_polls_options(){
 		break;
 	case 'edit':
     		if($_POST['edit']) {
-	    		
+	    		// print_r($_POST);
 	    		check_admin_referer('sp_edit_poll');
 
-	    		$title = trim($_POST['title']);
-	    		$content = trim($_POST['content']);
+	    		$title = sanitize_text_field($_POST['title']);
+	    		$content = sanitize_text_field($_POST['content']);
 		    	edit_poll($poll_id, $title, $content);
 
 	    		// $count_fields = count($_POST);
@@ -258,9 +262,11 @@ function cb_alex_polls_options(){
 	    			$k = preg_replace("/^answ-/i", "", $k);
 	    			$v = trim($v);
 	    			if( !empty($v) ){
-	    				$answs[$k] = $v; 
+	    				$answs[$k] = sanitize_text_field($v); 
 	    			}  			
 	    		}
+	    		unset($answs['_wpnonce']);
+    	    	unset($answs['_wp_http_referer']);
 	    		unset($answs['title']);
 	    		unset($answs['content']);
 	    		unset($answs['edit']);
@@ -273,6 +279,7 @@ function cb_alex_polls_options(){
 		  
 			$title = get_one_poll_title($poll_id);
 			$answers = get_one_poll_answers($poll_id);
+			// print_r($_POST);
 	?>
 	 <div class='wrap'>
 	  <div id="for_message"><h1><?php _e( 'edit_poll', 'simply_polls' );?></h1></div>
@@ -381,10 +388,11 @@ function cb_alex_polls_options(){
 add_action( 'wp_ajax_admin-poll', 'my_action_callback' );
 function my_action_callback() {
 
+		$nonce = $_POST['nonce'];
 		if ( !wp_verify_nonce( $nonce, 'admin_nonce' ) ) exit;
 
 		global $wpdb;
-		if($_POST['poll_id'] > 0) {
+		if( (int)$_POST['poll_id'] > 0) {
 		   del_one_poll( $_POST['poll_id'] );
 		 }
 		wp_die();
@@ -394,6 +402,7 @@ function my_action_callback() {
 add_action( 'wp_ajax_admin-del-answ', 'cb_del_one_answ' );
 function cb_del_one_answ() {
 
+		$nonce = $_POST['nonce'];
 		if ( !wp_verify_nonce( $nonce, 'admin_nonce' ) ) exit;
 
 		global $wpdb;
