@@ -30,7 +30,7 @@ Copyright 2005-2015 Automattic, Inc.
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-require dirname(__FILE__)."/alex_helpers.php";
+require_once("alex_helpers.php");
 
 register_activation_hook( __FILE__, 'alex_sp_activ_plugin' );
 register_deactivation_hook( __FILE__, 'alex_sp_deactiv_plugin' );
